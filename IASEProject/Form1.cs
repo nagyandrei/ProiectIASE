@@ -15,10 +15,12 @@ namespace IASEProject
     {
 
         public int[,] stareInitiala, stareFinala, stareActuala;
+        public byte[] initState, finalState;
         List<int[,]> noduri = new List<int[,]>();
         List<int[,]> exploredState = new List<int[,]>();
+        List<Button> buttons = new List<Button>();
         private CautareInAdancime mInstance=null;
-        private int n = 0;
+        public int n = 0;
 
         public Form1()
         {
@@ -52,7 +54,18 @@ namespace IASEProject
                 b.BackColor = Color.Green;
 
 
-            return b;
+            //Se creeaza o lista de butoane pentru a avea acces mai usor la ele
+            var x = buttons.FindIndex(_=>_.Name.Equals(b.Name));
+            if (x<0)
+            {
+                buttons.Add(b);
+            }
+            else
+            {
+                buttons[x] = b;
+            }
+
+                return b;
         }
 
         //Eveniment valabil pentru toate butoanele
@@ -63,6 +76,7 @@ namespace IASEProject
             //MessageBox.Show(b.Name.ToString());
             int i = int.Parse(b.Name.Split(',')[0]);
             int j = int.Parse(b.Name.Split(',')[1]);
+
             stareFinala[i, j] = (stareFinala[i, j] == 0) ? 1 : 0;
         }
 
@@ -74,9 +88,14 @@ namespace IASEProject
             {
                 stareFinala = new int[n, n];
                 stareInitiala = new int[n, n];
+                initState = new byte[n * n];
+                finalState = new byte[n * n];
+                InitializateInitialState(n * n);
+                InitializateFinalState(n * n);
+
                 InitializateInitialMatrix(n);
                 InitializateFinalMatrix(n);
-
+               
                 flowLayoutPanel1.Controls.Clear();
 
                 for (int i = 0; i < n; i++)
@@ -90,6 +109,24 @@ namespace IASEProject
             else
             {
                 MessageBox.Show("Alegeti un n intre 2 si 10");
+            }
+        }
+
+        private void InitializateFinalState(int v)
+        {
+            //Se initializeaza matricea finala cu 0, dimensiunea fiind n * n pentru vector
+            for (int i = 0; i < n*n; i++)
+            {
+                    initState[i] = 0;
+            }
+        }
+
+        private void InitializateInitialState(int v)
+        {
+            //Se initializeaza matricea initiala cu 0, dimensiunea fiind n * n pentru vector
+            for(int i=0;i<n*n;i++)
+            {
+                finalState[i] = 0;
             }
         }
 
@@ -184,10 +221,17 @@ namespace IASEProject
                 flowLayoutPanel1.Enabled = true;
             }
 
-            //foreach(var indice in btn)
-            //{
-
-            //}
+            //Se modifica valoarea matricei finale in functie de apasarea butoanelor
+           int i = 0;
+           foreach(var x in buttons)
+            {
+                
+                if (x.BackColor == Color.Red)
+                    finalState[i] = 0;
+                else
+                    finalState[i] = 1;
+                i++;
+            }
         }
 
         /* Aici puteti scrie algoritmii. Aveti ca si intrari pentru program matricele stareInitiala si stareFinala.
@@ -196,14 +240,20 @@ namespace IASEProject
          *  -apasa pe Confirm Stare Finala( acum nu mai poti apasa pe butoanele din matrice - doar daca apesi pe Editare Stare Finala)
          *  -apoi se activeaza butoanele pentru algoritmi
          */
-        //Exemplu de algoritm(hardCodat)
+
+
+
+
+        //Inca nu functioneaza
         private void btnAdancime_Click(object sender, EventArgs e)
         {
             noduri.Clear();
             n = int.Parse(txtN.Text);
             Stack<int[,]> nodesToExplore = new Stack<int[,]>();
-           // verificareMatrice(stareInitiala, stareFinala);
 
+            // verificareMatrice(stareInitiala, stareFinala);
+            var ceva = new byte[n * n];
+            ceva = finalState;
             //SearchTreeNode currentNode = new SearchTreeNode(null, stareInitiala, 0);
             nodesToExplore.Push(stareActuala);
             do
@@ -259,6 +309,7 @@ namespace IASEProject
             }
         }
 
+        //trebuie modificat ca sa mearga pe vectori si nu pe matrice
         private bool verificareStareFinala(int[,] stareInitiala, int[,] stareFinala)
         {
             int i, j, flag = 1;

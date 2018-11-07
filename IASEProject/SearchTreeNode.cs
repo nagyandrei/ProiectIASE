@@ -62,6 +62,7 @@ namespace IASEProject
             return estate;
         }
 
+        //Trebuie modificata
         private byte[] GenerateState(byte[] state, int pos, int up, int down, int left, int right)
         {
             int i = 0;
@@ -75,6 +76,7 @@ namespace IASEProject
             return newstate;
         }
 
+        //Trebuie modificata
         private void AddSuccessors(SearchTreeNode currentNode)
         {
             SearchTreeNode left, right, up, down;
